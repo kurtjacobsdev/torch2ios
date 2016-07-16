@@ -6,4 +6,4 @@ Usage is simple: just require 'torch2ios' in your lua script and call saveForiOS
 
 Included is a simple demo of the usage, see xor.lua.
 
-Also added are API to access the binary file format on iOS. See iOSClient.
+Also added are API to access the binary file format on iOS. See iOSClient. Namespace for the iOS to Torch7 support will follow THES (Torch Embedded Systems) tag.

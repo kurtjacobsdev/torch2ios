@@ -5,3 +5,5 @@ Small lib to serialise Torch7 Networks for iOS. Supported Layers include Fully C
 Usage is simple: just require 'torch2ios' in your lua script and call saveForiOS(_yourmodel, _destfilename) and a new .t7ios file will be created for use with the KSJNeuralNetwork (Coming Soon) iOS library on the iOS client.
 
 Included is a simple demo of the usage, see xor.lua.
+
+Also added are API to access the binary file format on iOS. See iOSClient.

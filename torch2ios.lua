@@ -6,9 +6,9 @@ require 'torch2ios_utils'
 require 'torch'
 
 local linear = 1
-local pooling_max = 2
-local pooling_average = 3
-local spatial_conv = 4
+local spatial_conv = 2
+local pooling_max = 3
+local pooling_average = 4
 
 local tanh_activation = 5
 local hard_tanh_activation = 6
@@ -92,7 +92,7 @@ function appendBinary(file, name, weight, bias, weight_c, bias_c, weight_layer_t
 	file:writeInt(layerid)
 
 	--Write Weights
-	if weight ~= nil then
+	if weight:nDimension() > 0 then
 		local weightTensorTypeID = resolveTensorType(weight_layer_type)
 		file:writeInt(weightTensorTypeID)
 		file:writeInt(weight_c)
@@ -107,7 +107,7 @@ function appendBinary(file, name, weight, bias, weight_c, bias_c, weight_layer_t
 	end
 
 	-- Write Biases
-	if bias ~= nil then
+	if bias:nDimension() > 0 then
 		local biasTensorTypeID = resolveTensorType(bias_layer_type)
 		file:writeInt(biasTensorTypeID)
 		file:writeInt(bias_c)

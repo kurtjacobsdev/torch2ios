@@ -150,7 +150,7 @@ function processLayer(layerData)
 	 	weight_c = weight:size(1)
 	 	wltype = weight:type()
 	end
-	if layerData.weight ~= nil then
+	if layerData.bias ~= nil then
 	 	bias = torch2ios_utils.flatten(layerData.bias)
 	 	bias_c = bias:size(1)
 	 	bltype = bias:type()

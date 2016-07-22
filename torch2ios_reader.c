@@ -10,13 +10,23 @@ typedef struct layer_entry
 	int layertype;
 	int datatype_w;
 	int datatype_b;
-	void *weights;
+	union
+	{
+		float *weights_buff_f;
+		int *weights_buff_i;
+		double *weights_buff_d;
+	}weight_buffers;
+	union
+	{
+		float *bias_buff_f;
+		int *bias_buff_i;
+		double *bias_buff_d;
+	}bias_buffers;
 	int weight_buffer_size;
-	void *biases; 
 	int bias_buffer_size;
 } TORCH_LAYER;
 
-const char* layers_layers_ptivations[] = {"","nn.Linear","nn.MaxPooling","nn.AveragePooling","nn.Convolution","nn.Tanh","nn.HardTanh","nn.LogSigmoid","nn.LogSoftMax","nn.Sigmoid","nn.ReLU"};
+const char* layers_and_activations[] = {"","nn.Linear","nn.MaxPooling","nn.AveragePooling","nn.Convolution","nn.Tanh","nn.HardTanh","nn.LogSigmoid","nn.LogSoftMax","nn.Sigmoid","nn.ReLU"};
 const char* tensor_types[] = {"","torch.FloatTensor","torch.DoubleTensor","torch.IntTensor"};
 
 void read_bin(char filename [], TORCH_LAYER **layers_pp, int *layers_count)
@@ -46,8 +56,8 @@ void read_bin(char filename [], TORCH_LAYER **layers_pp, int *layers_count)
 
 	TORCH_LAYER *layers_array = (TORCH_LAYER *) calloc(*layers_count,sizeof(TORCH_LAYER));
 
-	int lc_v = *layers_count;
-	for (int i = 0; i < lc_v; i++)
+	int lcc = *layers_count;
+	for (int i = 0; i < lcc; i++)
 	{
 		int wc = 0;
 		int bc = 0;
@@ -62,20 +72,62 @@ void read_bin(char filename [], TORCH_LAYER **layers_pp, int *layers_count)
 		{
 			fread(&datatype_w,sizeof(int),1,file_reader);
 			fread(&wc,sizeof(int),1,file_reader);
-			weights = (float *)calloc(wc,sizeof(float));
-			fread(weights,sizeof(float),wc,file_reader);
+			if (datatype_w == 1)
+			{
+				weights = (float *)calloc(wc,sizeof(float));
+				fread(weights,sizeof(float),wc,file_reader);
+			}
+			else if (datatype_w == 2)
+			{
+				weights = (double *)calloc(wc,sizeof(double));
+				fread(weights,sizeof(double),wc,file_reader);
+			}
+			else if (datatype_w == 3)
+			{
+				weights = (int *)calloc(wc,sizeof(int));
+				fread(weights,sizeof(int),wc,file_reader);
+			}
 			fread(&datatype_b,sizeof(int),1,file_reader);
 			fread(&bc,sizeof(int),1,file_reader);
-			bias = (float *)calloc(bc,sizeof(float));
-			fread(bias,sizeof(int),bc,file_reader);
+			if (datatype_w == 1)
+			{
+				bias = (float *)calloc(bc,sizeof(float));
+				fread(bias,sizeof(float),bc,file_reader);
+			}
+			else if (datatype_w == 2)
+			{
+				bias = (double *)calloc(bc,sizeof(double));
+				fread(bias,sizeof(double),bc,file_reader);
+			}
+			else if (datatype_w == 3)
+			{
+				bias = (int *)calloc(bc,sizeof(int));
+				fread(bias,sizeof(int),bc,file_reader);
+			}
 		}
 
 		layers_array[i].layertype = layertype;
 		layers_array[i].datatype_w = datatype_w;
 		layers_array[i].datatype_b = datatype_b;
-		layers_array[i].weights = weights;
+		//floatTensor
+		if (datatype_w == 1 && datatype_b == 1)
+		{
+			layers_array[i].weight_buffers.weights_buff_f = (float*)weights;
+			layers_array[i].bias_buffers.bias_buff_f = (float*)bias;
+		}
+			//doubleTensor
+		else if (datatype_w == 2 && datatype_b == 2)
+		{
+			layers_array[i].weight_buffers.weights_buff_d = (double*)weights;
+			layers_array[i].bias_buffers.bias_buff_d = (double*)bias;
+		}
+			//intTensor
+		else if (datatype_w == 3 && datatype_b == 3)
+		{
+			layers_array[i].weight_buffers.weights_buff_i = (int*)weights;
+			layers_array[i].bias_buffers.bias_buff_i = (int*)bias;
+		}
 		layers_array[i].weight_buffer_size = wc;
-		layers_array[i].biases = bias;
 		layers_array[i].bias_buffer_size = bc;
 		layers_count++;	
 	}
@@ -94,7 +146,7 @@ int main()
 		printf("\n");
 		for (int i = 0; i < lc; i ++)
 		{
-			printf("Layer Type: %s\n", layers_layers_ptivations[layers_p[i].layertype]);	
+			printf("Layer Type: %s\n", layers_and_activations[layers_p[i].layertype]);	
 			if (layers_p[i].datatype_w > 0)
 			{
 				printf("DataType W: %s\n", tensor_types[layers_p[i].datatype_w]);
@@ -103,19 +155,38 @@ int main()
 			{
 				printf("DataType B: %s\n", tensor_types[layers_p[i].datatype_b]);
 			}
-			if (layers_p[i].weights != NULL)
+			if (layers_p[i].weight_buffers.weights_buff_f != NULL || layers_p[i].weight_buffers.weights_buff_i != NULL || layers_p[i].weight_buffers.weights_buff_d != NULL)
 			{
-				float *w_buffer_p = (float *)layers_p[i].weights;
 				printf("Weight Buffer Size:%i\n",layers_p[i].weight_buffer_size);
-				printf("First Value In Weight Buffer:%f\n",w_buffer_p[0]);
+				if (layers_p[i].datatype_w == 1)
+				{
+					printf("First Value In Weight Buffer:%f\n",layers_p[i].weight_buffers.weights_buff_f[0]);
+				}
+				else if (layers_p[i].datatype_w == 2)
+				{
+					printf("First Value In Weight Buffer:%lf\n",layers_p[i].weight_buffers.weights_buff_d[0]);
+				}
+				else if (layers_p[i].datatype_w == 3)
+				{
+					printf("First Value In Weight Buffer:%i\n",layers_p[i].weight_buffers.weights_buff_i[0]);
+				}
 			}
-			if (layers_p[i].biases != NULL)
+			if (layers_p[i].bias_buffers.bias_buff_f != NULL || layers_p[i].bias_buffers.bias_buff_i != NULL || layers_p[i].bias_buffers.bias_buff_d != NULL)
 			{
-				float *b_buffer_p = (float *)layers_p[i].biases;
 				printf("Bias Buffer Size:%i\n",layers_p[i].bias_buffer_size);
-				printf("First Value In Bias Buffer:%f\n",b_buffer_p[0]);
+				if (layers_p[i].datatype_b == 1)
+				{
+					printf("First Value In Bias Buffer:%f\n",layers_p[i].bias_buffers.bias_buff_f[0]);
+				}
+				else if (layers_p[i].datatype_b == 2)
+				{
+					printf("First Value In Bias Buffer:%lf\n",layers_p[i].bias_buffers.bias_buff_d[0]);
+				}
+				else if (layers_p[i].datatype_b == 3)
+				{
+					printf("First Value In Bias Buffer:%i\n",layers_p[i].bias_buffers.bias_buff_i[0]);
+				}
 			}
-			
 			printf("\n");
 		}
 		free (layers_p);

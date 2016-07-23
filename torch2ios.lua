@@ -17,6 +17,8 @@ local log_soft_max_activation = 8
 local sigmoid_activation = 9
 local relu_activation = 10
 
+local reshape = 11
+
 local torchFloatT = 1
 local torchDoubleT = 2
 local torchIntT = 3
@@ -50,9 +52,9 @@ function resolveLayerName(name)
 	local id = 0
 	if name == "nn.Linear" then
 		id = linear
-	elseif name == "nn.MaxPooling" then
+	elseif name == "nn.SpatialMaxPooling" then
 		id = pooling_max
-	elseif name == "nn.AveragePooling" then
+	elseif name == "nn.SpatialAveragePooling" then
 		id = pooling_average
 	elseif name == "nn.SpatialConvolution" or name == "nn.SpatialConvolutionMM" then
 		id = spatial_conv
@@ -68,6 +70,8 @@ function resolveLayerName(name)
 		id = log_sigmoid_activation
 	elseif name == "nn.LogSoftMax" then
 		id = log_soft_max_activation
+	elseif name == "nn.Reshape" then
+		id = reshape
 	else
 		id = -1
 	end

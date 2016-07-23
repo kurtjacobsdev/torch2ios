@@ -8,7 +8,7 @@
 #import "THESLayer.h"
 
 NSString * const THES_layer_activations[] = {
-@"",@"nn.Linear",@"nn.Convolution",@"nn.MaxPooling",@"nn.AveragePooling",@"nn.Tanh",@"nn.HardTanh",@"nn.LogSigmoid",@"nn.LogSoftMax",@"nn.Sigmoid",@"nn.ReLU"
+@"",@"nn.Linear",@"nn.SpatialConvolution",@"nn.SpatialMaxPooling",@"nn.SpatialAveragePooling",@"nn.Tanh",@"nn.HardTanh",@"nn.LogSigmoid",@"nn.LogSoftMax",@"nn.Sigmoid",@"nn.ReLU",@"nn.Reshape"
 };
 
 NSString * const THES_tensor_types[] = {

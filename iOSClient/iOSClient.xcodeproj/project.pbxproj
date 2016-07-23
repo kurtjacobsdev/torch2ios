@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3C935BFE1D3AB551004B1351 /* ios_xor.t7ios in Resources */ = {isa = PBXBuildFile; fileRef = 3C935BFD1D3AB551004B1351 /* ios_xor.t7ios */; };
+		3C935C421D43FB70004B1351 /* mnist_ios.t7ios in Resources */ = {isa = PBXBuildFile; fileRef = 3C935C411D43FB70004B1351 /* mnist_ios.t7ios */; };
+		3C935C441D43FBE6004B1351 /* ios_xor.t7ios in Resources */ = {isa = PBXBuildFile; fileRef = 3C935C431D43FBE6004B1351 /* ios_xor.t7ios */; };
 		3CBC19961D351C75005CB3C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CBC19951D351C75005CB3C7 /* main.m */; };
 		3CBC19991D351C75005CB3C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CBC19981D351C75005CB3C7 /* AppDelegate.m */; };
 		3CBC199C1D351C75005CB3C7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CBC199B1D351C75005CB3C7 /* ViewController.m */; };
@@ -38,7 +39,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		3C935BFD1D3AB551004B1351 /* ios_xor.t7ios */ = {isa = PBXFileReference; lastKnownFileType = file; path = ios_xor.t7ios; sourceTree = "<group>"; };
+		3C935C411D43FB70004B1351 /* mnist_ios.t7ios */ = {isa = PBXFileReference; lastKnownFileType = file; name = mnist_ios.t7ios; path = ../../mnist_ios.t7ios; sourceTree = "<group>"; };
+		3C935C431D43FBE6004B1351 /* ios_xor.t7ios */ = {isa = PBXFileReference; lastKnownFileType = file; name = ios_xor.t7ios; path = ../../ios_xor.t7ios; sourceTree = "<group>"; };
 		3CBC19911D351C75005CB3C7 /* iOSClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOSClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3CBC19951D351C75005CB3C7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		3CBC19971D351C75005CB3C7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -117,7 +119,8 @@
 				3CBC19CF1D3548C9005CB3C7 /* THESLayer.m */,
 				3CBC19CB1D35477E005CB3C7 /* THESDiskFile.h */,
 				3CBC19CC1D35477E005CB3C7 /* THESDiskFile.m */,
-				3C935BFD1D3AB551004B1351 /* ios_xor.t7ios */,
+				3C935C431D43FBE6004B1351 /* ios_xor.t7ios */,
+				3C935C411D43FB70004B1351 /* mnist_ios.t7ios */,
 				3CBC199D1D351C75005CB3C7 /* Main.storyboard */,
 				3CBC19A01D351C75005CB3C7 /* Assets.xcassets */,
 				3CBC19A21D351C75005CB3C7 /* LaunchScreen.storyboard */,
@@ -256,10 +259,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3C935BFE1D3AB551004B1351 /* ios_xor.t7ios in Resources */,
 				3CBC19A41D351C75005CB3C7 /* LaunchScreen.storyboard in Resources */,
 				3CBC19A11D351C75005CB3C7 /* Assets.xcassets in Resources */,
 				3CBC199F1D351C75005CB3C7 /* Main.storyboard in Resources */,
+				3C935C441D43FBE6004B1351 /* ios_xor.t7ios in Resources */,
+				3C935C421D43FB70004B1351 /* mnist_ios.t7ios in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

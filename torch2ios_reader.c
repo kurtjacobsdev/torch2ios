@@ -26,7 +26,7 @@ typedef struct layer_entry
 	int bias_buffer_size;
 } TORCH_LAYER;
 
-const char* layers_and_activations[] = {"","nn.Linear","nn.MaxPooling","nn.AveragePooling","nn.Convolution","nn.Tanh","nn.HardTanh","nn.LogSigmoid","nn.LogSoftMax","nn.Sigmoid","nn.ReLU"};
+const char* layers_and_activations[] = {"","nn.Linear","nn.SpatialConvolution","nn.SpatialMaxPooling","nn.SpatialAveragePooling","nn.Tanh","nn.HardTanh","nn.LogSigmoid","nn.LogSoftMax","nn.Sigmoid","nn.ReLU","nn.Reshape"};
 const char* tensor_types[] = {"","torch.FloatTensor","torch.DoubleTensor","torch.IntTensor"};
 
 void read_bin(char filename [], TORCH_LAYER **layers_pp, int *layers_count)
@@ -140,7 +140,7 @@ int main()
 {
 		TORCH_LAYER ** layers_pp;
 		int lc = 0;
-		read_bin("ios_xor.t7ios",layers_pp,&lc);
+		read_bin("mnist_ios.t7ios",layers_pp,&lc);
 		TORCH_LAYER *layers_p = *layers_pp;
 
 		printf("\n");

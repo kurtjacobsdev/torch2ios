@@ -8,6 +8,10 @@
 #import "THESDiskFile.h"
 #import <UIKit/UIKit.h>
 
+#define CONV_LAYER_STRUCTURE_COUNT 8
+#define LINEAR_LAYER_STRUCTURE_COUNT 2
+#define POOLING_LAYER_STRUCTURE_COUNT 6
+
 typedef NS_ENUM(NSUInteger, THESDiskFileDataType)
 {
   THESDiskFileDataTypeFloat = 1,
@@ -31,6 +35,7 @@ typedef NS_ENUM(NSUInteger, THESDiskFileDataType)
   int datatype_b = 0;
   int bias_len = 0;
   void *bias_buffer;
+    int *structure_buffer;
   
   for (int i = 0; i < layer_count ; i ++)
   {
@@ -42,6 +47,40 @@ typedef NS_ENUM(NSUInteger, THESDiskFileDataType)
     bias_len = 0;
     bias_buffer = NULL;
     [[f readDataOfLength:sizeof(int)] getBytes:&layer_type length:sizeof(int)];
+      
+      if (layer_type == 1)
+      {
+          structure_buffer = (int *)calloc(LINEAR_LAYER_STRUCTURE_COUNT,sizeof(int));
+          for (int j = 0; j < LINEAR_LAYER_STRUCTURE_COUNT; j++)
+          {
+              [[f readDataOfLength:sizeof(int)] getBytes:&structure_buffer[j] length:sizeof(int)];
+          }
+      }
+      else if (layer_type == 2)
+      {
+          structure_buffer = (int *)calloc(CONV_LAYER_STRUCTURE_COUNT,sizeof(int));
+          for (int j = 0; j < CONV_LAYER_STRUCTURE_COUNT; j++)
+          {
+              [[f readDataOfLength:sizeof(int)] getBytes:&structure_buffer[j] length:sizeof(int)];
+          }
+      }
+      else if (layer_type == 3 || layer_type == 4)
+      {
+          structure_buffer = (int *)calloc(POOLING_LAYER_STRUCTURE_COUNT,sizeof(int));
+          for (int j = 0; j < POOLING_LAYER_STRUCTURE_COUNT; j++)
+          {
+              [[f readDataOfLength:sizeof(int)] getBytes:&structure_buffer[j] length:sizeof(int)];
+          }
+      }
+      else
+      {
+          structure_buffer = (int *)calloc(LINEAR_LAYER_STRUCTURE_COUNT,sizeof(int));
+          for (int j = 0; j < LINEAR_LAYER_STRUCTURE_COUNT; j++)
+          {
+            [[f readDataOfLength:sizeof(int)] getBytes:&structure_buffer[j] length:sizeof(int)];
+          }
+      }
+      
     if (layer_type <= 2)
     {
       [[f readDataOfLength:sizeof(int)] getBytes:&datatype_w length:sizeof(int)];
@@ -123,7 +162,7 @@ typedef NS_ENUM(NSUInteger, THESDiskFileDataType)
       }
     }
     
-    THESLayer *layer = [[THESLayer alloc] initWithLayerType:@(layer_type) weightBuffer:[NSValue valueWithPointer:weight_buffer] weightBufferSize:weights_len biasBuffer:[NSValue valueWithPointer:bias_buffer] weightBufferSize:bias_len];
+    THESLayer *layer = [[THESLayer alloc] initWithLayerType:@(layer_type) weightBuffer:[NSValue valueWithPointer:weight_buffer] weightBufferSize:weights_len biasBuffer:[NSValue valueWithPointer:bias_buffer] weightBufferSize:bias_len andStructureBuffer:[NSValue valueWithPointer:structure_buffer]];
     [layers addObject:layer];
   }
 

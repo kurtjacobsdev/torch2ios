@@ -17,24 +17,26 @@ NSString * const THES_tensor_types[] = {
 
 @implementation THESLayer
 
-- (instancetype)initWithLayerType:(NSNumber *)layerType weightBuffer:(NSValue *)wBuffer weightBufferSize:(NSUInteger)wBufferSize biasBuffer:(NSValue *)bBuffer weightBufferSize:(NSUInteger)bBufferSize
+- (instancetype)initWithLayerType:(NSNumber *)layerType weightBuffer:(NSValue *)wBuffer weightBufferSize:(NSUInteger)wBufferSize biasBuffer:(NSValue *)bBuffer weightBufferSize:(NSUInteger)bBufferSize andStructureBuffer:(NSValue *)structureBuffer
 {
   self = [super init];
   if (self)
   {
-    self.weightsBuffer = wBuffer;
-    self.biasBuffer = bBuffer;
-    self.weightsBufferSize = wBufferSize;
-    self.biasBufferSize = bBufferSize;
-    self.layerType = layerType;
+      self.weightsBuffer = wBuffer;
+      self.biasBuffer = bBuffer;
+      self.weightsBufferSize = wBufferSize;
+      self.biasBufferSize = bBufferSize;
+      self.layerType = layerType;
+      self.structureBuffer = structureBuffer;
   }
   return self;
 }
 
 - (void)freeBuffers
 {
-  free([self.weightsBuffer pointerValue]);
-  free([self.biasBuffer pointerValue]);
+    free([self.weightsBuffer pointerValue]);
+    free([self.biasBuffer pointerValue]);
+    free([self.structureBuffer pointerValue]);
 }
 
 + (void)freeLayerBuffers:(NSArray *)layers

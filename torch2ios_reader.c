@@ -5,9 +5,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define CONV_LAYER_STRUCTURE_COUNT 8
+#define LINEAR_LAYER_STRUCTURE_COUNT 2
+#define POOLING_LAYER_STRUCTURE_COUNT 6
+
 typedef struct layer_entry 
 { 
 	int layertype;
+	int *structure_buffer;
 	int datatype_w;
 	int datatype_b;
 	union
@@ -39,14 +44,6 @@ void read_bin(char filename [], TORCH_LAYER **layers_pp, int *layers_count)
 		return;
 	}
 
-	int wc = 0;
-	int bc = 0;
-	int layertype = 0;
-	int datatype_w = 0;
-	int datatype_b = 0;
-	void *weights = NULL; 
-	void *bias = NULL; 
-
 	fread(layers_count,sizeof(int),1,file_reader);
 
 	if (*layers_count <= 0)
@@ -62,12 +59,36 @@ void read_bin(char filename [], TORCH_LAYER **layers_pp, int *layers_count)
 		int wc = 0;
 		int bc = 0;
 		int layertype = 0;
+		int in_size = 0;
+		int out_size = 0;
 		int datatype_w = 0;
 		int datatype_b = 0;
 		void *weights = NULL; 
-		void *bias = NULL; 
+		void *bias = NULL;
+		int *structure_buffer;
 
 		fread(&layertype,sizeof(int),1,file_reader);
+		if (layertype == 1)
+		{
+			structure_buffer = (int *)calloc(LINEAR_LAYER_STRUCTURE_COUNT,sizeof(int));
+			fread(structure_buffer,sizeof(int),LINEAR_LAYER_STRUCTURE_COUNT,file_reader);
+		}
+		else if (layertype == 2)
+		{
+			structure_buffer = (int *)calloc(CONV_LAYER_STRUCTURE_COUNT,sizeof(int));
+			fread(structure_buffer,sizeof(int),CONV_LAYER_STRUCTURE_COUNT,file_reader);
+		}
+		else if (layertype == 3 || layertype == 4)
+		{
+			structure_buffer = (int *)calloc(POOLING_LAYER_STRUCTURE_COUNT,sizeof(int));
+			fread(structure_buffer,sizeof(int),POOLING_LAYER_STRUCTURE_COUNT,file_reader);	
+		}
+		else
+		{
+			structure_buffer = (int *)calloc(LINEAR_LAYER_STRUCTURE_COUNT,sizeof(int));
+			fread(structure_buffer,sizeof(int),LINEAR_LAYER_STRUCTURE_COUNT,file_reader);
+		}
+
 		if (layertype <= 2)
 		{
 			fread(&datatype_w,sizeof(int),1,file_reader);
@@ -107,6 +128,7 @@ void read_bin(char filename [], TORCH_LAYER **layers_pp, int *layers_count)
 		}
 
 		layers_array[i].layertype = layertype;
+		layers_array[i].structure_buffer = structure_buffer;
 		layers_array[i].datatype_w = datatype_w;
 		layers_array[i].datatype_b = datatype_b;
 		//floatTensor
@@ -140,13 +162,13 @@ int main()
 {
 		TORCH_LAYER ** layers_pp;
 		int lc = 0;
-		read_bin("mnist_ios.t7ios",layers_pp,&lc);
+		read_bin("ios_xor.t7ios",layers_pp,&lc);
 		TORCH_LAYER *layers_p = *layers_pp;
 
 		printf("\n");
 		for (int i = 0; i < lc; i ++)
 		{
-			printf("Layer Type: %s\n", layers_and_activations[layers_p[i].layertype]);	
+			printf("Layer Type: %s\n", layers_and_activations[layers_p[i].layertype]);
 			if (layers_p[i].datatype_w > 0)
 			{
 				printf("DataType W: %s\n", tensor_types[layers_p[i].datatype_w]);
@@ -187,6 +209,7 @@ int main()
 					printf("First Value In Bias Buffer:%i\n",layers_p[i].bias_buffers.bias_buff_i[0]);
 				}
 			}
+			printf("First Value In Structure Buffer:%i\n",layers_p[i].structure_buffer[0]);
 			printf("\n");
 		}
 		free (layers_p);

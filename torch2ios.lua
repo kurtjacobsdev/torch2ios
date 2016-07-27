@@ -30,13 +30,13 @@ function saveForiOS(container, filename)
 	--Layer Count
 	file:writeInt(#modulesCount-1)
 	for idx, value in pairs (modulesCount) do
-		--Network Type Sequential, Parrallel, etc
+	-- 	--Network Type Sequential, Parrallel, etc
 		if idx == 1 then
-		--Network Layers
+	-- 	--Network Layers
 		else
-			local supported, n, w, b, wc, bc, wlt, blt = processLayer(value)
+			local supported, n, w, b, wc, bc, wlt, blt, linear_v, conv_v, pool_v = processLayer(value)
 			if supported then
-				appendBinary(file,n,w,b,wc,bc,wlt,blt)
+				appendBinary(file,n,w,b,wc,bc,wlt,blt,linear_v,conv_v,pool_v)
 			else
 				print ("unsupported layer with name: "..n.." encountered.")
 				file:close()
@@ -90,10 +90,30 @@ function resolveTensorType(tensorType)
 	return id;
 end
 
-function appendBinary(file, name, weight, bias, weight_c, bias_c, weight_layer_type, bias_layer_type)
+function appendBinary(file, name, weight, bias, weight_c, bias_c, weight_layer_type, bias_layer_type, linear_values, conv_values, pool_values)
 	--Write Layer Type ID
 	local layerid = resolveLayerName(name)
 	file:writeInt(layerid)
+
+	if name == "nn.Linear" then
+		for i=1,#linear_values do
+			print ("here"..linear_values[i])
+			file:writeInt(linear_values[i])
+		end
+	elseif name == "nn.SpatialConvolutionMM" or name == "nn.SpatialConvolution" then
+		for i=1,#conv_values do
+			file:writeInt(conv_values[i])
+		end
+	elseif name == "nn.SpatialMaxPooling" or name == "nn.SpatialAveragePooling" then
+		for i=1,#pool_values do
+			file:writeInt(pool_values[i])
+		end
+	else
+		for i=1,#linear_values do
+			print ("here"..linear_values[i])
+			file:writeInt(linear_values[i])
+		end
+	end
 
 	--Write Weights
 	if weight:nDimension() > 0 then
@@ -149,6 +169,53 @@ function processLayer(layerData)
 	local wltype = nil
 	local bltype = nil
 
+	local linear_input_size = nil
+	local linear_output_size = nil
+
+	local conv_input_plane = nil
+	local conv_output_plane = nil
+	local conv_kernel_width = nil
+	local conv_kernel_height = nil
+	local conv_shift_width = nil
+	local conv_shift_height = nil
+	local conv_pad_width = nil
+	local conv_pad_height = nil
+
+	local pool_kernel_width = nil
+	local pool_kernel_height = nil
+	local pool_shift_width = nil
+	local pool_shift_height = nil
+	local pool_pad_width = nil
+	local pool_pad_height = nil
+
+	if name == "nn.Linear" then
+		linear_input_size = layerData.gradInput:size(1)
+		linear_output_size = layerData.output:size(1)
+	elseif name == "nn.SpatialConvolutionMM" or name == "nn.SpatialConvolution" then
+		linear_input_size = layerData.gradInput:size(1)
+		linear_output_size = layerData.output:size(1)
+		conv_input_plane = layerData.nInputPlane
+		conv_output_plane = layerData.nOutputPlane
+		conv_kernel_width = layerData.kW
+		conv_kernel_height = layerData.kH
+		conv_shift_width = layerData.dW
+		conv_shift_height = layerData.dH
+		conv_pad_width = layerData.padW
+		conv_pad_height = layerData.padH
+	elseif name == "nn.SpatialMaxPooling" or name == "nn.SpatialAveragePooling" then
+		linear_input_size = layerData.gradInput:size(1)
+		linear_output_size = layerData.output:size(1)
+		pool_kernel_width = layerData.kW
+		pool_kernel_height = layerData.kH
+		pool_shift_width = layerData.dW
+		pool_shift_height = layerData.dH
+		pool_pad_width = layerData.padW
+		pool_pad_height = layerData.padH
+	else
+		linear_input_size = layerData.gradInput:size(1)
+		linear_output_size = layerData.output:size(1)
+	end
+	
 	if layerData.weight ~= nil then
 	 	weight = torch2ios_utils.flatten(layerData.weight)
 	 	weight_c = weight:size(1)
@@ -160,5 +227,5 @@ function processLayer(layerData)
 	 	bltype = bias:type()
 	end
 
-	return true, name, weight, bias, weight_c, bias_c, wltype, bltype
+	return true, name, weight, bias, weight_c, bias_c, wltype, bltype, {linear_input_size,linear_output_size}, {conv_input_plane,conv_output_plane,conv_kernel_width,conv_kernel_height,conv_shift_width,conv_shift_height,conv_pad_width,conv_pad_height},{pool_kernel_width,pool_kernel_height,pool_shift_width,pool_shift_height,pool_pad_width,pool_pad_height}
 end

@@ -9,6 +9,6 @@ Included is a simple demo of the usage, see xor.lua.
 Also added are API to access the binary file format on iOS and C. See iOSClient for iOS example and torch2ios_read.c for C example. Namespace for the iOS to Torch7 support will follow THES (Torch Embedded Systems)tag.
 
 ![alt tag](https://s31.postimg.org/p0o25qy8b/Torch_ES_File.png)
-![alt tag](https://s32.postimg.org/svfjwmtcx/pool_arch.png)
-![alt tag](https://s32.postimg.org/t6x09e9sx/fc_arch.png)
-![alt tag](https://s32.postimg.org/bscs14co1/conv_arch.png)
+![alt tag](https://s32.postimg.org/xu32b5x5x/pool_arch.png)
+![alt tag](https://s32.postimg.org/qpl924pwl/fc_arch.png)
+![alt tag](https://s32.postimg.org/sg4a3m7fp/conv_arch.png)

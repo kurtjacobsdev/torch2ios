@@ -97,7 +97,6 @@ function appendBinary(file, name, weight, bias, weight_c, bias_c, weight_layer_t
 
 	if name == "nn.Linear" then
 		for i=1,#linear_values do
-			print ("here"..linear_values[i])
 			file:writeInt(linear_values[i])
 		end
 	elseif name == "nn.SpatialConvolutionMM" or name == "nn.SpatialConvolution" then
@@ -110,7 +109,6 @@ function appendBinary(file, name, weight, bias, weight_c, bias_c, weight_layer_t
 		end
 	else
 		for i=1,#linear_values do
-			print ("here"..linear_values[i])
 			file:writeInt(linear_values[i])
 		end
 	end

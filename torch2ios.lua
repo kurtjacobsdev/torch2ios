@@ -187,11 +187,9 @@ function processLayer(layerData)
 	local pool_pad_height = nil
 
 	if name == "nn.Linear" then
-		linear_input_size = layerData.gradInput:size(1)
-		linear_output_size = layerData.output:size(1)
+		linear_input_size = layerData.gradInput:size(layerData.gradInput:dim())
+		linear_output_size = layerData.output:size(layerData.output:dim())
 	elseif name == "nn.SpatialConvolutionMM" or name == "nn.SpatialConvolution" then
-		linear_input_size = layerData.gradInput:size(1)
-		linear_output_size = layerData.output:size(1)
 		conv_input_plane = layerData.nInputPlane
 		conv_output_plane = layerData.nOutputPlane
 		conv_kernel_width = layerData.kW
@@ -201,8 +199,6 @@ function processLayer(layerData)
 		conv_pad_width = layerData.padW
 		conv_pad_height = layerData.padH
 	elseif name == "nn.SpatialMaxPooling" or name == "nn.SpatialAveragePooling" then
-		linear_input_size = layerData.gradInput:size(1)
-		linear_output_size = layerData.output:size(1)
 		pool_kernel_width = layerData.kW
 		pool_kernel_height = layerData.kH
 		pool_shift_width = layerData.dW
@@ -210,8 +206,9 @@ function processLayer(layerData)
 		pool_pad_width = layerData.padW
 		pool_pad_height = layerData.padH
 	else
-		linear_input_size = layerData.gradInput:size(1)
-		linear_output_size = layerData.output:size(1)
+		-- Other Layer Such as Activation or Reshape..
+		linear_input_size = layerData.gradInput:size(layerData.gradInput:dim())
+		linear_output_size = layerData.output:size(layerData.output:dim())
 	end
 	
 	if layerData.weight ~= nil then
